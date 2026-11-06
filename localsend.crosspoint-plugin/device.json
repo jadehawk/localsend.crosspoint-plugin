@@ -1,0 +1,51 @@
+{
+  "title": "Local Send",
+  "description": "Receive EPUB, PNG, JPG and BMP files using the official LocalSend app.",
+  "native": {
+    "type": "localsend.v1",
+    "capability": "transfer.localsend.v1",
+    "ui": {
+      "folder": "Target download folder",
+      "listening": "Listening for files",
+      "unavailable": "Not listening; reopen File Transfer",
+      "recent": "Recent received files",
+      "empty": "No files received",
+      "receive_tab": "Receive",
+      "history_tab": "History",
+      "details": "Received file",
+      "saved_in": "Saved in",
+      "layout": "History Layout",
+      "device_id": "Device ID",
+      "grid_columns": "Grid columns",
+      "grid_rows": "Grid rows",
+      "list_thumbnails": "List layout thumbnails",
+      "clear_history": "Clear History"
+    },
+    "folders": [
+      {
+        "title": "SD Root",
+        "path": "/"
+      },
+      {
+        "title": "Books",
+        "path": "/Books"
+      },
+      {
+        "title": "LocalSend",
+        "path": "/LocalSend"
+      },
+      {
+        "title": "Books/LocalSend",
+        "path": "/Books/LocalSend"
+      },
+      {
+        "title": ".sleep",
+        "path": "/.sleep"
+      },
+      {
+        "title": ".sleep-overlay",
+        "path": "/.sleep-overlay"
+      }
+    ]
+  }
+}
