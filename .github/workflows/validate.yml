@@ -1,0 +1,27 @@
+name: Validate LocalSend plugin
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate contract, including DETAILS.md
+        run: python tests/validate_contract.py
+      - name: Test browser settings
+        run: node --test tests/test-plugin.mjs
+      - name: Build release ZIP (without publishing)
+        shell: pwsh
+        run: ./tools/package-plugin.ps1
+      - name: Verify ZIP content and manifest
+        run: python tests/validate_contract.py dist/localsend.crosspoint-plugin.zip
