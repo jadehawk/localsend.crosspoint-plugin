@@ -14,6 +14,8 @@ Both interfaces share `/.crosspoint/localsend/localsend.json`. Choose one of the
 
 The firmware receiver accepts up to 16 files per offer, each up to 1 GiB, streams file payloads to SD, and requires approval. EPUB and image files are supported. Use a **trusted LAN**: the receiver is HTTP, not encrypted.
 
+**Known firmware limitation (especially X3):** After pressing **Accept**, the reader checks available SD-card space before starting the upload. The FreeInk SD-card manager may need to scan the FAT to count free clusters, which can take several seconds or tens of seconds on some cards. The result is cached for about 20 seconds. The reader shows **Checking SD card space...** while the sender waits; if space is insufficient, the receiver rejects the upload with HTTP 507. This is inherited from the firmware/SD-card manager, not the plugin.
+
 Razor-Crest's History index is `/.crosspoint/localsend/history.bin`. Removing or clearing History **does not delete downloaded files**. This index is not required by the vanilla port.
 
 ## Install manually

@@ -90,6 +90,8 @@ Other accepted plugin roots on compatible firmware include `/.crosspoint/plugins
 
 Existing filenames at the destination are not silently overwritten. File details show the saved directory; deleting a received file is separate from removing its History entry.
 
+**Current inherited limitation — slow SD free-space checks (Razor-Crest):** After you select **Accept**, the firmware checks the SD card's available space *before* authorizing the upload. The FreeInk SD-card manager may need to scan the FAT allocation table to count free clusters; on some cards, particularly on the X3, this can take several seconds or even tens of seconds. The result is cached for roughly 20 seconds, so the delay varies between transfers. During the check, the reader shows **Checking SD card space...** and the sender may appear to be waiting even though the request was accepted. No file data is transferred until the check succeeds; insufficient space results in HTTP 507. This is a firmware/SD-card-manager limitation, not something the SD plugin can speed up.
+
 ## Configure destination and Device ID
 
 On Razor-Crest, open **Local Send → Settings**. You can also use the plugin's browser **WebUI settings page** on firmware with the supported plugin WebUI API.
@@ -122,6 +124,7 @@ The WebUI preserves Razor-Crest's layout and thumbnail preferences when saving d
 | Local Send is missing from File Transfer | Install the plugin into the correct SD folder, enable the Plugin System, and use firmware with `transfer.localsend.v1`. |
 | The reader doesn't appear in the sender app | Both devices must share a reachable LAN. Check Wi-Fi, client isolation, and that the reader is on the Receive screen. |
 | Transfer is rejected | Use EPUB/PNG/JPG/BMP, at most 16 files per offer and 1 GiB per file. Check SD free space and filename collisions. |
+| Transfer pauses after pressing Accept (especially X3) | The firmware checks SD free space before starting the upload. A FAT free-cluster scan can be slow; wait for it to finish. If there is insufficient space, the sender receives HTTP 507. |
 | WebUI settings are visible but reception doesn't work | The browser settings page does not provide the native receiver. Update to a supported firmware build. |
 | History is empty after clearing | Expected: the index was cleared; existing files remain on SD. |
 
