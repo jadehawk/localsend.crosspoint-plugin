@@ -12,7 +12,7 @@ if (-not (Test-Path -LiteralPath $OutputDirectory)) {
 }
 $OutputDirectory = (Resolve-Path -LiteralPath $OutputDirectory).Path
 $manifest = Get-Content (Join-Path $payload 'manifest.json') -Raw | ConvertFrom-Json
-if ($manifest.name -ne 'localsend' -or $manifest.version -ne '0.1.0') {
+if ($manifest.name -ne 'localsend' -or $manifest.version -ne '0.1.1') {
   throw 'Unexpected plugin ID or unreleased version'
 }
 if ((Compare-Object @($manifest.files | Sort-Object) @($files | Sort-Object)).Count -gt 0) {

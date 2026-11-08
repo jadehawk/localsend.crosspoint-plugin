@@ -15,7 +15,7 @@ All five files are **required for LocalSend** and explicitly declared in `manife
 - `README.md` — installed instructions
 - `DETAILS.md` — rich Plugin Hub item details; **required here**, optional under the general Plugin Hub publishing contract
 
-`compatibility.firmware_family = ["crosspoint"]`, `plugin_api_min = 1`, and `requires = ["transfer.localsend.v1"]` prevent presenting a nonfunctional listener to firmware without the receiver. Only advertise the capability once the native port works. Keep version `0.1.0` until first publication.
+`compatibility.firmware_family = ["crosspoint"]`, `plugin_api_min = 1`, and `requires = ["transfer.localsend.v1"]` prevent presenting a nonfunctional listener to firmware without the receiver. Only advertise the capability once the native port works. Initial release was `0.1.0`; increment the manifest and packaging/validation expectations together for subsequent releases.
 
 Manual SD installation uses a folder named `localsend` beneath an accepted plugin root (`/.crosspoint/plugins/`, `/plugins/`, `/.plugins/`). `dist/localsend-sd.zip` extracts directly into `/plugins/`; `dist/localsend.crosspoint-plugin.zip` uses the Plugin Hub publishing payload name. Do not confuse the publishing directory suffix with the installed plugin ID.
 

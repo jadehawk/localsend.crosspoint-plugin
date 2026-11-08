@@ -4,7 +4,7 @@
   "mount": "settings",
   "description": "Receive EPUB and image files in batches using LocalSend over local Wi-Fi.",
   "author": "Jadehawk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "compatibility": {
     "firmware_family": ["crosspoint"],
     "plugin_api_min": 1,

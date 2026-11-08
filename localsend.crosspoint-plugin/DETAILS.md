@@ -19,3 +19,9 @@ A blank Device ID uses the model-based identity, such as `Razor-Crest(X3)` or `R
 ## Privacy and requirements
 
 Requires a supported firmware, an SD card, and Wi-Fi shared with the sender. Incoming LocalSend transfers currently use unencrypted HTTP on the local network, so use a network you trust. The browser plugin cannot start a listener.
+
+## Can't discover the reader on Windows?
+
+LocalSend uses **UDP 53317 for discovery** and **TCP 53317 for transfers**. If the reader does not appear in LocalSend Desktop, keep its Receive screen open, verify both devices share a reachable Wi-Fi LAN, and check Windows firewall and VPN routes. On Windows, reserved UDP port ranges can prevent LocalSend from opening the discovery listener even when TCP transfers still work.
+
+In PowerShell, run `netsh interface ipv4 show excludedportrange protocol=udp` and `Get-NetUDPEndpoint -LocalPort 53317`. If **53317** is within a reserved range and there is no listener, restart Windows and check again. The reader uses **HTTP**; HTTPS-only fallback scans may not find it when multicast is blocked. Do **not** delete Windows port exclusions or permanently disable HTTPS. Full troubleshooting steps are in the repository README.

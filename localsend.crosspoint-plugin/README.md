@@ -18,6 +18,20 @@ The firmware receiver accepts up to 16 files per offer, each up to 1 GiB, stream
 
 Razor-Crest's History index is `/.crosspoint/localsend/history.bin`. Removing or clearing History **does not delete downloaded files**. This index is not required by the vanilla port.
 
+## Discovery troubleshooting (Windows)
+
+If the reader does not appear in LocalSend Desktop, check that both devices are on the same reachable Wi-Fi network and **Local Send → Receive** is open on the reader. LocalSend uses **UDP 53317** for multicast discovery and **TCP 53317** for registration/transfers.
+
+Windows can reserve a UDP port range that includes 53317, preventing the desktop app from listening for discovery even when TCP transfers work. In Windows PowerShell, check:
+
+```powershell
+netsh interface ipv4 show excludedportrange protocol=udp
+netsh interface ipv6 show excludedportrange protocol=udp
+Get-NetUDPEndpoint -LocalPort 53317 -ErrorAction SilentlyContinue
+```
+
+If 53317 is excluded and LocalSend has no UDP listener, restart Windows and recheck both results. Also verify firewall permissions, Wi-Fi client isolation, and that VPN routes (including Tailscale) do not override the local LAN. The reader advertises **HTTP**; if UDP discovery is blocked, a desktop HTTPS fallback scan may not find it. Do **not** delete Windows port exclusions or permanently disable HTTPS as a workaround. See the repository README's **Windows discovery: UDP port 53317** section for a full diagnosis.
+
 ## Install manually
 
 Copy the **contents** of this folder to `/plugins/localsend/` on SD. Alternatively, extract the repository's `dist/localsend-sd.zip` directly into `/plugins/`. The publishing ZIP (`dist/localsend.crosspoint-plugin.zip`) uses a different root name for Plugin Hub.

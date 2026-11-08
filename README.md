@@ -4,7 +4,7 @@ Receive books and images directly on a CrossPoint e-reader from the [LocalSend](
 
 **Local Send** is a **dual-interface CrossPoint SD plugin**: it supplies the native on-device definition and a browser WebUI configuration page. The actual LocalSend discovery and HTTP receiver run in **compatible firmware**, not in `plugin.js`.
 
-- **Current plugin version:** `0.1.0`
+- **Current plugin version:** `0.1.1`
 - **Supported receiver today:** [Razor-Crest](https://github.com/jadehawk/Razor-Crest) firmware with the `transfer.localsend.v1` capability
 - **Vanilla CrossPoint:** native receiver port planned; the plugin package alone does **not** enable file reception on stock firmware.
 
@@ -122,11 +122,39 @@ The WebUI preserves Razor-Crest's layout and thumbnail preferences when saving d
 | Issue | What to check |
 | --- | --- |
 | Local Send is missing from File Transfer | Install the plugin into the correct SD folder, enable the Plugin System, and use firmware with `transfer.localsend.v1`. |
-| The reader doesn't appear in the sender app | Both devices must share a reachable LAN. Check Wi-Fi, client isolation, and that the reader is on the Receive screen. |
+| The reader doesn't appear in the sender app | Both devices must share a reachable LAN. Check Wi-Fi, client isolation, that the reader is on the Receive screen, and [Windows UDP discovery troubleshooting](#windows-discovery-udp-port-53317) if using LocalSend Desktop. |
 | Transfer is rejected | Use EPUB/PNG/JPG/BMP, at most 16 files per offer and 1 GiB per file. Check SD free space and filename collisions. |
 | Transfer pauses after pressing Accept (especially X3) | The firmware checks SD free space before starting the upload. A FAT free-cluster scan can be slow; wait for it to finish. If there is insufficient space, the sender receives HTTP 507. |
 | WebUI settings are visible but reception doesn't work | The browser settings page does not provide the native receiver. Update to a supported firmware build. |
 | History is empty after clearing | Expected: the index was cleared; existing files remain on SD. |
+
+### Windows discovery: UDP port 53317
+
+LocalSend uses **UDP port 53317** for multicast device discovery and **TCP port 53317** for HTTP registration and transfers. A reader can have a working receiver and accept file transfers yet not appear in LocalSend Desktop if the Windows application cannot listen on UDP 53317.
+
+On Windows, dynamically excluded UDP port ranges (sometimes allocated while Hyper-V, WSL, WinNAT, or other virtual networking services are active) can prevent LocalSend from binding that port. This can look like a reader firmware failure. To diagnose it, leave **Local Send → Receive** open on the reader, then run these commands in Windows PowerShell:
+
+```powershell
+# Check whether 53317 falls inside any reserved UDP range.
+netsh interface ipv4 show excludedportrange protocol=udp
+netsh interface ipv6 show excludedportrange protocol=udp
+
+# Check whether LocalSend has a UDP listener on 53317.
+Get-NetUDPEndpoint -LocalPort 53317 -ErrorAction SilentlyContinue |
+    Select-Object LocalAddress, LocalPort, OwningProcess
+
+# Identify the process owning the UDP endpoint, if one exists.
+Get-NetUDPEndpoint -LocalPort 53317 -ErrorAction SilentlyContinue |
+    ForEach-Object { Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue }
+```
+
+**How to interpret the result:**
+
+1. If **53317 is inside a listed exclusion** and no UDP endpoint exists, Windows may be preventing the discovery listener from starting. Restart Windows, then recheck the excluded ranges and UDP endpoint before starting a transfer. Dynamic exclusions can change after a reboot.
+2. If UDP 53317 is **not excluded** and the LocalSend process owns an endpoint, the port is available. Multiple endpoints can be normal when sockets share the port. If discovery still fails, check Windows firewall rules, the selected network interface, AP/client isolation and multicast filtering on the Wi-Fi router.
+3. If a VPN such as Tailscale is enabled, ensure routes to the reader's LAN subnet use the local Wi-Fi adapter. A competing VPN/subnet route can prevent direct connections even when discovery works.
+
+**HTTPS and fallback scans:** This reader's LocalSend receiver advertises **HTTP**, not HTTPS; use a trusted LAN. When multicast discovery fails, some LocalSend Desktop discovery paths may fall back to scanning IP addresses using the desktop's HTTPS setting. An HTTPS probe cannot connect to the reader's HTTP-only listener and may generate an HTTP 400 error. Temporarily disabling HTTPS on the desktop *on a trusted network* can help diagnose that fallback, but it is **not a permanent fix** for a blocked UDP port. Do not delete Windows excluded port ranges or disable system networking services indiscriminately.
 
 ## Repository layout
 

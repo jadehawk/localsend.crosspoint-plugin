@@ -37,7 +37,7 @@ def validate() -> None:
     device = json.loads((payload / "device.json").read_text("utf-8"))
     check(manifest["name"] == EXPECTED_ID, "manifest plugin ID")
     check(manifest["title"] == device["title"], "plugin title")
-    check(manifest["version"] == "0.1.0", "unreleased version must remain 0.1.0")
+    check(manifest["version"] == "0.1.1", "plugin version must match 0.1.1")
     check(manifest.get("mount") in ("settings", "files"), "WebUI mount")
     check(manifest.get("compatibility") == {
         "firmware_family": ["crosspoint"], "plugin_api_min": 1, "requires": [CAPABILITY]
@@ -66,7 +66,7 @@ def validate() -> None:
             for name in FILES:
                 check(z.read(f"{PAYLOAD_NAME}/{name}") == (payload / name).read_bytes(),
                       f"ZIP payload mismatch for {name}")
-    print(f"PASS: LocalSend 0.1.0 plugin contract ({len(FILES)} runtime files; DETAILS required)"
+    print(f"PASS: LocalSend {manifest['version']} plugin contract ({len(FILES)} runtime files; DETAILS required)"
           + (" and release ZIP contents" if len(sys.argv) > 1 else ""))
 
 
